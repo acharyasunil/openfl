@@ -15,7 +15,7 @@ def parameterize(dec):
 
 class CustomThread(Thread):
     def __init__(self, group=None, target=None, name=None,
-                    args=(), kwargs={}, Verbose=None):
+                    args=(), kwargs={}):
         Thread.__init__(self, group, target, name, args, kwargs)
         self._result = None
         self._exec_duration = None
@@ -25,15 +25,14 @@ class CustomThread(Thread):
         if self._target is not None:
             start = time.time()
             self._result = self._target(*self._args, **self._kwargs)
-            end = time.time()
-            self._exec_duration = round(end - start, 2)
+            self._exec_duration = round(time.time() - start, 2)
 
     def result(self):
         return self._result, self._exec_duration
         
-class execution:
+class fed:
     @parameterize
-    def control(func, timeout):
+    def exec_control(func, timeout):
         def wrapper(*args, **kwargs):
             start = time.time()
             logger.info(f"Started: ({str(func.__name__)})")
@@ -41,7 +40,7 @@ class execution:
             p.start()
             p.join(timeout)
 
-            duration = str(time.time() - start) if p.result()[1] is None else p.result()[1]
+            duration = round(time.time() - start, 3) if p.result()[1] is None else p.result()[1]
 
             print(f"({str(p.name)}) Execution took : {duration} second(s)")
             if p.is_alive():
